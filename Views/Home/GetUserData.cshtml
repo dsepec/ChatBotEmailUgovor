@@ -1,0 +1,91 @@
+﻿<!-- Views/Home/Index.cshtml -->
+@{
+    ViewData["Title"] = "";
+}
+
+@model UserData
+
+<h1><a href="@Url.Action("Index", "Home")"><img src="~/images/Impuls_Leasing_Logo_4C_small_01.png" /></a></h1>
+
+@if (ViewBag.FlashMessage != null)
+{
+    <div class="container">
+        <div class="alert alert-success alert-dismissible">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @ViewBag.FlashMessage
+            <br />
+        </div>
+    </div>
+}
+
+
+<div>
+    Poštovani,<br /><br />
+    Dospjelo dugovanje po ugovoru @Model.BrUgo na dan @Model.DatumStanja.ToShortDateString().Replace("/", ".") iznosi @Model.TrenutniDug.ToString("N2") EUR.<br />
+    Nedospjelo dugovanje po ugovoru @Model.BrUgo na dan @Model.DatumStanja.ToShortDateString().Replace("/", ".") iznosi @Model.NedospijeloUgovor.ToString("N2") EUR.<br />
+    Po ugovoru @Model.BrUgo trenutno imate @Model.BrojOtvorenihRataUgovor @Model.BrojNeplacenihRataUgovor.<br />
+    Do kraja ugovora @Model.BrojPreostalihRataTekstPrije @Model.BrojPreostalihRata @Model.BrojPreostalihRataTekst. <br />       
+</div>
+@if (Model.BrojAktivnih > 1)
+{
+    <div><br/>
+        Vaše ukupno dospjelo dugovanje po svim ugovorima na dan @Model.DatumStanja.ToShortDateString().Replace("/", ".") iznosi @Model.TrenutniDugKlijent.ToString("N2") EUR.<br />
+        Nedospjelo dugovanje po svim ugovorima na dan @Model.DatumStanja.ToShortDateString().Replace("/", ".") iznosi @Model.NedospijeloKlijent.ToString("N2") EUR.<br />
+        Po svim ugovorima trenutno imate @Model.BrojOtvorenihRataKlijent @Model.BrojNeplacenihRataKlijent.<br />
+    </div>
+}
+@if (@Model.Stat == null || @Model.Stat =="")
+{
+<div>    
+    <form method="post" action="@Url.Action("Index", "Home")">
+            @Html.AntiForgeryToken()
+        <input type="hidden" name="BrojUgovora" value="@Model.BrUgo" />
+        <br/>
+        <label>Ukoliko želite da Vas povratno kontaktiramo, molimo Vas da iz padajućeg izbornika odaberete razlog kontaktiranja:</label>
+            <br />
+
+            <select id="ddlPitanje" name="Pitanje" class="form-control" onchange="changeButtonText(this)">
+                <option value="">Razlog kontaktiranja:</option>
+                @foreach (var option in (List<SelectListItem>)ViewBag.DropdownOptions)
+                {
+                    <option value="@option.Value">@option.Text</option>
+                }
+        </select>
+        <br />
+            <button type="submit" class="btn btn-primary" >Ponovo pokreni</button>
+
+            <script>
+                function changeButtonText(dropdown) {
+                    var button = document.querySelector('.btn.btn-primary');
+
+                    if (dropdown.value === "") {
+                        button.innerText = "Ponovo pokreni";
+                    } else {
+                        button.innerText = "Pošalji upit i ponovo pokreni";
+                    }
+                }
+            </script>
+    </form>
+    <br />
+    @* <button onclick="window.close()" class="btn btn-danger">Zatvori prozor</button>> *@
+</div>
+}
+@if (@Model.Stat != null && @Model.Stat != "")
+{
+    <div>
+        <br />
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Ponovo pokreni</a>
+        <br /><br />
+        @* <button onclick="window.close()" class="btn btn-danger">Zatvori prozor</button> *@
+    </div>
+}
+@if (@Model.TrenutniDug > 0.00M)
+{
+    <div>
+        Molimo Vas da dospjelo dugovanje po ugovoru @Model.BrUgo uplatite na IBAN: <b>HR7724840081500183309</b> uz model <b>HR01</b> i poziv na broj <b>@Model.Sklc1@Model.BrUgo@Model.Sklc2</b> <br />
+        ili učitajte 2D barkod sliku u vašu aplikaciju za mobilno bankarstvo.
+        <br/>
+        <img src="@Url.Action("CreateBarcode","Home", new {id = Model.BrUgo, b1 = Model.Barcode1, b2 = Model.Barcode2})" />
+        
+    </div>
+}

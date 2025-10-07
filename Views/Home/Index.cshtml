@@ -1,0 +1,84 @@
+﻿@using System.Text.RegularExpressions;
+<!-- Views/Home/Index.cshtml -->
+@{
+    ViewData["Title"] = "Podaci o ugovoru";
+}
+@model UserDataModel
+@using AspNetCore.ReCaptcha
+@Html.ReCaptcha()
+
+<h1><a href="@Url.Action("Index", "Home")"><img src="~/images/Impuls_Leasing_Logo_4C_small_01.png" /></a></h1>
+<p></p>
+
+@if (ViewBag.FlashMessage != null)
+{
+    <div class="container">
+        <div class="alert alert-success alert-dismissible">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>@ViewBag.FlashMessage <br />
+            @if (ViewBag.FlashMessage == "Korisnik nije pronađen.")
+            {
+                <p>Molim Vas da provjerite podatke i pokušate ponovo.<br/>Broj ugovora nalazi se na svakom računu za ratu.<br/>Email adresa mora odgovarati email adresi u našem sustavu.
+                </p>
+            }
+            @if (ViewBag.FlashMessage == "Neispravan verifikacijski kod.")
+            {
+                <p>
+                  Neispravan verifikacijski kod..<br />Unesite ponovo broj ugovora i email adresu i provjerite Vaš email sandučić.
+                </p>
+            }
+            @if (ViewBag.FlashMessage == "Korisnik nema email adresu.")
+            {
+                <p>
+                    Bez email adrese ne možete dobiti uvid u podatke.<br /> Molimo Vas da nas kontaktirate. <br /> Naši kontakti nalaze se na svakom računu za ratu.
+                </p>
+            }
+        </div>
+    </div>
+}
+
+<form action="/Home/VerifyUser" method="post" novalidate onsubmit="return validateForm()">
+    @Html.AntiForgeryToken()
+    <table>
+        <tr>
+            <td width="100"><label for="LastName"><b>Broj ugovora: </b></label></td>
+            <td><input type="text" id="ContractNumber" name="ContractNumber" pattern="[0-9]+" title="Broj ugovora se sastoji samo od brojeva" /></td>
+            <p></p>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td width="100"><label for="FirstName"><b>Email adresa: </b></label></td>
+            <td><input type="email" id="UserId" name="UserId" /></td>
+            <p></p>
+        </tr>
+    </table>
+        <p></p>
+    <button type="submit" class="btn btn-primary">Pokreni</button> <br /><br />
+    @* <button onclick="window.close()" class="btn btn-danger">Zatvori prozor</button> *@
+</form>
+
+<script>
+
+    function validateForm() {
+        var userIdInput = document.getElementById('UserId');
+        var contractNumberInput = document.getElementById('ContractNumber');
+
+        // Dodajte provjeru da polja nisu prazna
+        if (userIdInput.value.trim() === '' || contractNumberInput.value.trim() === '') {
+            alert("Broj ugovora i email adresa su obavezna polja. Molim Vas da ih popunite.");
+            return false;
+        }
+        
+
+        // Validacija može biti prilagođena prema vašim zahtjevima
+        // Ovdje možete dodati dodatne uvjete prema potrebi
+
+        if (!contractNumberInput.checkValidity()) {
+            // Prikazati vlastitu poruku umjesto ugrađene poruke
+            alert("Broj ugovora se sastoji samo od brojeva. Molim Vas da ponovo unesete podatke.");
+            return false; // Sprječava slanje forme ako nije uspješno validirana
+        }
+
+        return true; // Omogućava slanje forme ako je uspješno validirana
+    }
+</script>

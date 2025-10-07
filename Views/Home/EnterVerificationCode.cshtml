@@ -1,0 +1,61 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h1><a href="@Url.Action("Index", "Home")"><img src="~/images/Impuls_Leasing_Logo_4C_small_01.png" /></a></h1>
+<p></p>
+@if (ViewBag.FlashMessage != null)
+{
+    <div class="container">
+        <div class="alert alert-success alert-dismissible">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>@ViewBag.FlashMessage 
+
+            @if (ViewBag.FlashMessage == "Neispravan verifikacijski kod.")
+            {
+                <p>
+                    Provjerite Vaš email sandučić.
+                </p>
+            }
+        </div>
+    </div>
+}
+
+<form method="post" action="/Home/VerifyInput" novalidate onsubmit="return validateForm()">
+    @Html.AntiForgeryToken()
+    
+    <table>
+        <tr>
+            <td width="300"><label for="inputCode"><b>Verifikacijski kôd je poslan na vašu email adresu.</b></label></td>
+        <tr />
+    </table>
+    <table>
+        <tr>
+            <td width="100"><label for="inputCode"><b>Unesite kôd:</b></label></td>
+            <td width="50"><input type="text" id="inputCode" name="inputCode" /></td>
+            <td width="5">&nbsp;</td>
+            <td width="100"><button type="submit" class="btn btn-primary">Pošalji</button></td>
+            <p></p>
+        <tr />
+    </table>
+@*     <label for="inputCode">Verifikacijski kôd je poslan na vaš email.</label><br />
+    <label for="inputCode">Unesite kôd:</label>
+    <input type="text" id="inputCode" name="inputCode" required /> *@
+
+    @* <button type="submit">Pošalji</button> *@
+</form>
+
+<script>
+
+    function validateForm() {
+        var userIdInput = document.getElementById('inputCode');
+
+        // Dodajte provjeru da polja nisu prazna
+        if (userIdInput.value.trim() === '') {
+            alert("Verifikacijski kod je obavezno polje.");
+            return false;
+        }
+
+        return true; // Omogućava slanje forme ako je uspješno validirana
+    }
+</script>
